@@ -36,23 +36,24 @@ def get_browser():
 	br = mechanize.Browser()
 
 	br.set_handle_equiv(True)
-	br.set_handle_gzip(True)
+	#br.set_handle_gzip(True)
 	br.set_handle_redirect(True)
 	br.set_handle_referer(True)
 	br.set_handle_robots(False)
+	br.set_debug_http(True)
 	br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
 	br.addheaders = [('User-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36'),
 	('Accept','text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
 			('Accept-Language','en-US,en;q=0.5')]
+
 	return br
 
 
 def login(br, args):
-	response = br.open( "http://alarm.com/pda/" )
+	response = br.open( "https://alarm.com/pda/" )
 	location = response.geturl()
 	content = response.read()
-	log.debug(content)
 	session = re.search(r'\/(\(S[^\/]+)\/', location)
 	if session:
 		session = session.group(1)
