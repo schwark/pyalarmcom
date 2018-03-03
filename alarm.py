@@ -51,7 +51,7 @@ def get_browser():
 
 
 def login(br, args):
-	response = br.open( "https://alarm.com/pda/" )
+	response = br.open( "https://www.alarm.com/login.aspx" )
 	location = response.geturl()
 	content = response.read()
 	session = re.search(r'\/(\(S[^\/]+)\/', location)
@@ -69,7 +69,8 @@ def login(br, args):
 	if eventval:
 		eventval = eventval.group(1)
 	log.debug("EVENTVALIDATION is  %s",eventval)
-	post = mechanize.Request('https://www.alarm.com/pda/'+session+'/default.aspx',data={'__VIEWSTATE': viewstate, '__EVENTVALIDATION': eventval, '__VIEWSTATEGENERATOR': viewstategenerator, 'ctl00$ContentPlaceHolder1$txtLogin': args.username, 'ctl00$ContentPlaceHolder1$txtPassword': args.password, 'ctl00$ContentPlaceHolder1$btnLogin': 'Login'}, method='POST')
+	post = mechanize.Request('https://www.alarm.com/web/Default.aspx',
+		data={'__VIEWSTATE': viewstate, '__EVENTVALIDATION': eventval, '__VIEWSTATEGENERATOR': viewstategenerator, 'IsFromNewSite': '1', 'JavaScriptTest': '1', 'ctl00$ContentPlaceHolder1$loginform$hidLoginID': '', 'ctl00$ContentPlaceHolder1$loginform$txtUserName': args.username, 'ctl00$ContentPlaceHolder1$loginform$txtPassword': args.password, 'ctl00$ContentPlaceHolder1$loginform$signInButton': 'Logging In...', 'ctl00$bottom_footer3$ucCLS_ZIP$txtZip': 'Zip Code'}, method='POST')
 	response = br.open(post)
 	log.debug("Post login URL is  %s", response.geturl())
 
