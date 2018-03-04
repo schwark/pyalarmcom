@@ -4,6 +4,7 @@ import re
 import mechanize
 import argparse
 import logging
+import json
 
 def main():
 	parser = argparse.ArgumentParser(description='Command line interface to alarm.com panels')
@@ -11,8 +12,8 @@ def main():
 						help='alarm.com username')
 	parser.add_argument('-p', '--password', metavar='password',
 						help='alarm.com password')
-	parser.add_argument('operation', choices = ['armstay', 'armaway', 'disarm'],
-						help='panel operation command: armstay, armaway or disarm')
+	parser.add_argument('operation', choices = ['armstay', 'armaway', 'disarm', 'status'],
+						help='panel operation command: armstay, armaway, disarm or status')
 	parser.add_argument('-s', '--silent', action='store_true',
 						help='enable silent arming')
 	parser.add_argument('-b', '--bypass', action='store_false',
@@ -21,9 +22,9 @@ def main():
 						help='enable arming with no entry delay')
 	args = parser.parse_args()
 
-	commands = {'armstay': 'armStay', 'armaway': 'armAway', 'disarm': 'disarm'}
+	commands = {'armstay': '/armStay', 'armaway': '/armAway', 'disarm': '/disarm', 'status': ''}
 	if args.operation:
-		args.operation = commands[args.operation.lower()]
+		args.urlext = commands[args.operation.lower()]
 	execute_command(args)
 
 def execute_command(args):
@@ -40,7 +41,7 @@ def get_browser():
 	br.set_handle_redirect(True)
 	br.set_handle_referer(True)
 	br.set_handle_robots(False)
-	br.set_debug_http(True)
+	br.set_debug_http(logging.DEBUG == log.getEffectiveLevel())
 	br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
 	br.addheaders = [('User-agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36'),
@@ -89,6 +90,7 @@ def get_panel(br):
 
 
 def api_call(br, panel_id, args):
+	states = ['UNKNOWN', 'DISARM', 'ARMSTAY', 'ARMAWAY']
 	cookiejar = br.cookiejar
 	ajaxkey = None
 	for cookie in cookiejar:
@@ -96,15 +98,21 @@ def api_call(br, panel_id, args):
 			ajaxkey = cookie.value
 	if ajaxkey:
 		log.debug('ajaxkey is  %s', ajaxkey)
-		apiCall = mechanize.Request('https://www.alarm.com/web/api/devices/partitions/'+panel_id+'/'+args.operation,data='{"forceBypass":'+str(args.bypass)+',"noEntryDelay":'+str(args.nodelay)+',"silentArming":'+str(args.silent)+',"statePollOnly":false}', method='POST')
+		apiMethod = 'GET' if ('status' == args.operation.lower()) else 'POST'
+		apiBody = '' if ('status' == args.operation.lower()) else '{"forceBypass":'+str(args.bypass)+',"noEntryDelay":'+str(args.nodelay)+',"silentArming":'+str(args.silent)+',"statePollOnly":false}'
+		apiCall = mechanize.Request('https://www.alarm.com/web/api/devices/partitions/'+panel_id+args.urlext,data=apiBody, method=apiMethod)
 		apiCall.add_header('ajaxrequestuniquekey', ajaxkey)
 		apiCall.add_header('Accept', 'application/vnd.api+json')
 		response = br.open(apiCall)
 		content = response.read()
 		log.debug("Post command JSON is  %s", content)
+		result = json.loads(content)
+		log.debug(result)
+		currentstate = result['data']['attributes']['state']
+		print "Current state is "+states[currentstate]
 
 if __name__ == '__main__':
 	log = logging.getLogger(__name__)
-	log.setLevel(logging.DEBUG)
+	log.setLevel(logging.INFO)
 	logging.basicConfig()
 	main()
