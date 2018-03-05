@@ -1,7 +1,7 @@
 # pyalarmcom
 
-command line interface to alarm.com panels
-python "api" to alarm.com panels
+* command line interface to alarm.com panels
+* python "api" to alarm.com panels
 
 ```bash
 usage: alarm.py [-h] [-u username] [-p password] [-s] [-b] [-n]
