@@ -109,7 +109,9 @@ def api_call(br, panel_id, args):
 		result = json.loads(content)
 		log.debug(result)
 		currentstate = result['data']['attributes']['state']
+		panel_id = result['data']['relationships']['stateInfo']['data']['id']
 		print "Current state is "+states[currentstate]
+		print "panel_id is "+panel_id
 
 if __name__ == '__main__':
 	log = logging.getLogger(__name__)
