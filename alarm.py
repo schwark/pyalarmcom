@@ -117,6 +117,15 @@ class AlarmDotCom(object):
 	def refresh(self):
 		return self.command('STATUS')
 
+	def disarm(self):
+		return self.command('DISARM')
+
+	def arm_stay(self, forceBypass=False, noEntryDelay=False, silentArming=True):
+		return self.command('ARMSTAY', forceBypass, noEntryDelay, silentArming)
+
+	def arm_away(self, forceBypass=False, noEntryDelay=False, silentArming=True):
+		return self.command('ARMAWAY', forceBypass, noEntryDelay, silentArming)
+
 	def command(self, command, forceBypass=False, noEntryDelay=False, silentArming=True):
 		states = ['UNKNOWN', 'DISARM', 'ARMSTAY', 'ARMAWAY']
 		commands = {'ARMSTAY': '/armStay', 'ARMAWAY': '/armAway', 'DISARM': '/disarm', 'STATUS': ''}
