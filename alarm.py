@@ -138,7 +138,7 @@ class AlarmDotCom(object):
 			apiBody = ''
 		else:
 			apiMethod = 'POST'
-			apiBody = '{"forceBypass":'+str(forceBypass)+',"noEntryDelay":'+str(noEntryDelay)+',"silentArming":'+str(silentArming)+',"statePollOnly":false}'
+			apiBody = '{"forceBypass":'+str(forceBypass).lower()+',"noEntryDelay":'+str(noEntryDelay).lower()+',"silentArming":'+str(silentArming).lower()+',"statePollOnly":false}'
 
 		result = self.api_call(apiUrl, apiMethod, apiBody)
 		currentstate = result['data']['attributes']['state']
