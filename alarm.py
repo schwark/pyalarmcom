@@ -101,6 +101,7 @@ class AlarmDotCom(object):
 		apiCall = mechanize.Request('https://www.alarm.com/web/api/'+apiUrl,data=apiBody, method=apiMethod)
 		apiCall.add_header('ajaxrequestuniquekey', ajaxkey)
 		apiCall.add_header('Accept', 'application/vnd.api+json')
+		apiCall.add_header('Content-Type','application/json; charset=UTF-8')
 		result = None
 		try:
 			response = br.open(apiCall)
@@ -158,11 +159,11 @@ def main():
 						help='alarm.com password')
 	parser.add_argument('operation', choices = ['armstay', 'armaway', 'disarm', 'status'],
 						help='panel operation command: armstay, armaway, disarm or status')
-	parser.add_argument('-s', '--silent', action='store_true',
+	parser.add_argument('-s', '--silent', action='store_false',
 						help='enable silent arming')
-	parser.add_argument('-b', '--bypass', action='store_false',
+	parser.add_argument('-b', '--bypass', action='store_true',
 						help='force bypass of open sensors')
-	parser.add_argument('-n', '--nodelay', action='store_false',
+	parser.add_argument('-n', '--nodelay', action='store_true',
 						help='enable arming with no entry delay')
 	args = parser.parse_args()
 
