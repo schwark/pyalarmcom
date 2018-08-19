@@ -159,7 +159,7 @@ def main():
 						help='alarm.com password')
 	parser.add_argument('operation', choices = ['armstay', 'armaway', 'disarm', 'status'],
 						help='panel operation command: armstay, armaway, disarm or status')
-	parser.add_argument('-s', '--silent', action='store_false',
+	parser.add_argument('-s', '--silent', action='store_true',
 						help='enable silent arming')
 	parser.add_argument('-b', '--bypass', action='store_true',
 						help='force bypass of open sensors')
