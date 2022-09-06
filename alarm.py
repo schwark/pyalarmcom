@@ -168,7 +168,7 @@ def main():
 	args = parser.parse_args()
 
 	alarm = AlarmDotCom(args.username, args.password)
-	print "current status is "+alarm.command(args.operation, args.bypass, args.nodelay, args.silent)
+	print("current status is "+alarm.command(args.operation, args.bypass, args.nodelay, args.silent))
 
 
 if __name__ == '__main__':
